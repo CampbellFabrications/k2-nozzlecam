@@ -23,6 +23,13 @@ SUB_PIC_WIDTH=1600
 SUB_PIC_HEIGHT=1200
 SUB_PIC_FPS=5
 
+PROG_USTREAMER=/usr/bin/ustreamer_static_arm32
+NOZZLE_USTR_PORT=8001
+NOZZLE_USTR_FORMAT=MJPEG
+NOZZLE_USTR_RESOLUTION=1920x1080
+NOZZLE_USTR_LOG_LEVEL=1
+NOZZLE_USTR_HOST=0.0.0.0
+
 TIME_OUT_CNT=15
 
 echo_console()
@@ -37,6 +44,9 @@ fw_info()
             local is_main=1
         ;;
         *sub*)
+            local is_main=0
+        ;;
+        *nozzle*)
             local is_main=0
         ;;
     esac
@@ -80,7 +90,14 @@ fw_info()
             if [ "x$is_main" = "x1" ]; then
                 json_add_object "main_cam"
             else
-                json_add_object "sub_cam"
+                case $1 in
+                    *nozzle*)
+                        json_add_object "nozzle_cam"
+                    ;;
+                    *)
+                        json_add_object "sub_cam"
+                    ;;
+                esac
             fi
             json_add_string "video_node" $1
             json_add_string "manufactory" $manufactory
@@ -156,6 +173,21 @@ start_uvc()
                 --exec $PROG_SUB -- -i /dev/v4l/by-id/$1 -t $SUB_CAM \
                 -w $SUB_PIC_WIDTH -h $SUB_PIC_HEIGHT -f $SUB_PIC_FPS \
                 -c
+            [ $? = 0 ] && echo_console "OK\n" || echo_console "FAIL\n"
+        ;;
+        nozzle-video*)
+            echo_console "start ustreamer service for $1 : "
+
+            fw_info /dev/v4l/by-id/$1
+
+            start-stop-daemon -S -b -m -p /var/run/$1.pid \
+                --exec $PROG_USTREAMER -- \
+                --device=/dev/v4l/by-id/$1 \
+                --format=$NOZZLE_USTR_FORMAT \
+                --resolution=$NOZZLE_USTR_RESOLUTION \
+                --port=$NOZZLE_USTR_PORT \
+                --log-level=$NOZZLE_USTR_LOG_LEVEL \
+                --host=$NOZZLE_USTR_HOST
             [ $? = 0 ] && echo_console "OK\n" || echo_console "FAIL\n"
         ;;
     esac
@@ -234,6 +266,40 @@ stop_uvc()
                 jq -cMS 'del(.sub_cam)' $TMP_VERSION_FILE > $TMP_VERSION_FILE.tmp && \
                 mv $TMP_VERSION_FILE.tmp $TMP_VERSION_FILE && sync
                 [ $(jq -e 'has("main_cam")' $TMP_VERSION_FILE) = "true" ] || rm -rf $TMP_VERSION_FILE
+            }
+        ;;
+        nozzle-video*)
+            echo_console "stop ustreamer service for $1 : "
+
+            start-stop-daemon -K -p /var/run/$1.pid
+
+            if [ $? = 0 ]; then
+                echo_console "OK\n"
+
+                # wait for process exit
+                while true
+                do
+                    if [ -d /proc/$(cat /var/run/$1.pid) ]; then
+                        sleep 0.2
+                        let count+=1
+                    else
+                        break
+                    fi
+                    # time out 3s, then send kill signal to process
+                    if [ $count -gt $TIME_OUT_CNT ]; then
+                        kill -9 $(cat /var/run/$1.pid)
+                        sleep 0.5
+                    fi
+                done
+
+            else
+                echo_console "FAIL\n"
+            fi
+
+            [ -f $TMP_VERSION_FILE ] && {
+                jq -cMS 'del(.nozzle_cam)' $TMP_VERSION_FILE > $TMP_VERSION_FILE.tmp && \
+                mv $TMP_VERSION_FILE.tmp $TMP_VERSION_FILE && sync
+                [ $(jq -e 'has("main_cam") or has("sub_cam")' $TMP_VERSION_FILE) = "true" ] || rm -rf $TMP_VERSION_FILE
             }
     esac
 }
