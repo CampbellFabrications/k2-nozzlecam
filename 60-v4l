@@ -33,7 +33,7 @@
                 done
             # The external USB port for the K2 Plus is 1-1.1:1.0, run `udevadm info /dev/videoX` to check if the DEVPATH for your added camera, and change the next line accordingly.
             # Yet to get the internal hub modification's USB port DEVPATH, so keep the external 1-1.1:1.0 for now.
-            else if [ "$DEVICENAME" = "1-1.1:1.0" ]; then
+            elif [ "$DEVICENAME" = "1-1.1:1.0" ]; then
             # USB HUB port, for 3DO Nozzle Camera only!
                 for node in $videos
                 do
