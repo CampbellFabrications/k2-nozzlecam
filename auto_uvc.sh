@@ -27,6 +27,7 @@ PROG_USTREAMER=/usr/bin/ustreamer_static_arm32
 NOZZLE_USTR_PORT=8001
 NOZZLE_USTR_FORMAT=MJPEG
 NOZZLE_USTR_RESOLUTION=1920x1080
+NOZZLE_USTR_FRAMERATE=60
 NOZZLE_USTR_LOG_LEVEL=1
 NOZZLE_USTR_HOST=0.0.0.0
 
@@ -199,6 +200,7 @@ start_uvc()
                 --device=/dev/v4l/by-id/$1 \
                 --format=$NOZZLE_USTR_FORMAT \
                 --resolution=$NOZZLE_USTR_RESOLUTION \
+                --desired-fps=$NOZZLE_USTR_FRAMERATE \
                 --port=$NOZZLE_USTR_PORT \
                 --log-level=$NOZZLE_USTR_LOG_LEVEL \
                 --host=$NOZZLE_USTR_HOST
