@@ -10,6 +10,12 @@ Feel free to refer to the User Controls section for command functionality.
 Results may vary depending on hardware installation, you will likely end up with a customised command structure for your particular setup.
 I'll be providing my commands used here for reference until such time as a front-end UI can me made to control the camera without touching the commandline.
 
+**Install Script**
+
+I added a small helper script to back up original files and replace them with symlinks to new versions.
+
+- **File:** [install.sh](install.sh)
+
 ## FPC Cable Options
 - 5cm - Needs LED's
 - 10cm - Needs LED's
