@@ -5,7 +5,7 @@
 . /usr/share/libubox/jshn.sh
 
 PROG=/usr/bin/cam_app
-PROG_SUB=/usr/bin/cam_sub_app # now unused as there is no stock camera module
+PROG_SUB=/usr/bin/cam_sub_app
 WEBRTC_LOCAL=/usr/bin/webrtc_local
 TMP_VERSION_FILE=/tmp/.cam_version
 VERSION_FILE=/mnt/UDISK/creality/userdata/config/cam_version.json
@@ -14,7 +14,7 @@ FW_ROOT_DIR=/usr/share/uvc/fw
 MAIN_CAM=0
 MAIN_PIC_WIDTH=1920
 MAIN_PIC_HEIGHT=1080
-MAIN_PIC_FPS=30
+MAIN_PIC_FPS=15
 
 MODEL=$(/usr/bin/get_sn_mac.sh model)
 
@@ -22,13 +22,6 @@ SUB_CAM=1
 SUB_PIC_WIDTH=1600
 SUB_PIC_HEIGHT=1200
 SUB_PIC_FPS=5
-
-PROG_USTREAMER=/usr/bin/ustreamer_static_arm32
-NOZZLE_USTR_PORT=8001
-NOZZLE_USTR_FORMAT=MJPEG
-NOZZLE_USTR_RESOLUTION=1920x1080
-NOZZLE_USTR_LOG_LEVEL=1
-NOZZLE_USTR_HOST=0.0.0.0
 
 TIME_OUT_CNT=15
 
@@ -44,9 +37,6 @@ fw_info()
             local is_main=1
         ;;
         *sub*)
-            local is_main=0
-        ;;
-        *nozzle*)
             local is_main=0
         ;;
     esac
@@ -90,14 +80,7 @@ fw_info()
             if [ "x$is_main" = "x1" ]; then
                 json_add_object "main_cam"
             else
-                case $1 in
-                    *nozzle*)
-                        json_add_object "nozzle_cam"
-                    ;;
-                    *)
-                        json_add_object "sub_cam"
-                    ;;
-                esac
+                json_add_object "sub_cam"
             fi
             json_add_string "video_node" $1
             json_add_string "manufactory" $manufactory
@@ -116,15 +99,9 @@ fw_info()
 
             json_init
             json_add_object "main_cam"
-            json_add_string "video_node" $1
             json_add_string "manufactory" $manufactory
             json_add_string "cur_version" $cur_version
-            json_add_string "newest_fw_path" $fw_path
-            if [ $fw_version -gt $cur_version ]; then
-                json_add_boolean "can_update" 1
-            else
-                json_add_boolean "can_update" 0
-            fi
+            json_add_string "power_en_pin" $power_en_pin
             json_close_object
             json_dump > $VERSION_FILE
             json_cleanup
@@ -181,36 +158,6 @@ start_uvc()
                 -c
             [ $? = 0 ] && echo_console "OK\n" || echo_console "FAIL\n"
         ;;
-        nozzle-video*)
-            echo_console "start ustreamer service for $1 : "
-            logger -t uvc "[START_USTREAMER] Starting nozzle camera: $1"
-
-            fw_info /dev/v4l/by-id/$1
-
-            logger -t uvc "[START_USTREAMER] Config: PROG=$PROG_USTREAMER"
-            logger -t uvc "[START_USTREAMER] Device: /dev/v4l/by-id/$1"
-            logger -t uvc "[START_USTREAMER] Format: $NOZZLE_USTR_FORMAT"
-            logger -t uvc "[START_USTREAMER] Resolution: $NOZZLE_USTR_RESOLUTION"
-            logger -t uvc "[START_USTREAMER] Port: $NOZZLE_USTR_PORT"
-            logger -t uvc "[START_USTREAMER] Host: $NOZZLE_USTR_HOST"
-
-            start-stop-daemon -S -b -m -p /var/run/$1.pid \
-                --exec $PROG_USTREAMER -- \
-                --device=/dev/v4l/by-id/$1 \
-                --format=$NOZZLE_USTR_FORMAT \
-                --resolution=$NOZZLE_USTR_RESOLUTION \
-                --port=$NOZZLE_USTR_PORT \
-                --log-level=$NOZZLE_USTR_LOG_LEVEL \
-                --host=$NOZZLE_USTR_HOST
-            
-            if [ $? = 0 ]; then
-                logger -t uvc "[START_USTREAMER] Successfully started $1 with PID $(cat /var/run/$1.pid)"
-                echo_console "OK\n"
-            else
-                logger -t uvc "[START_USTREAMER] FAILED to start $1 (exit code: $?)"
-                echo_console "FAIL\n"
-            fi
-        ;;
     esac
 }
 
@@ -256,7 +203,7 @@ stop_uvc()
         ;;
 
         sub-video*)
-            echo_console "stop sub_cam_app service for $1 : "
+            echo_console "stop cam_app service for $1 : "
 
             start-stop-daemon -K -p /var/run/$1.pid
 
@@ -288,40 +235,6 @@ stop_uvc()
                 mv $TMP_VERSION_FILE.tmp $TMP_VERSION_FILE && sync
                 [ $(jq -e 'has("main_cam")' $TMP_VERSION_FILE) = "true" ] || rm -rf $TMP_VERSION_FILE
             }
-        ;;
-        nozzle-video*)
-            echo_console "stop ustreamer service for $1 : "
-
-            start-stop-daemon -K -p /var/run/$1.pid
-
-            if [ $? = 0 ]; then
-                echo_console "OK\n"
-
-                # wait for process exit
-                while true
-                do
-                    if [ -d /proc/$(cat /var/run/$1.pid) ]; then
-                        sleep 0.2
-                        let count+=1
-                    else
-                        break
-                    fi
-                    # time out 3s, then send kill signal to process
-                    if [ $count -gt $TIME_OUT_CNT ]; then
-                        kill -9 $(cat /var/run/$1.pid)
-                        sleep 0.5
-                    fi
-                done
-
-            else
-                echo_console "FAIL\n"
-            fi
-
-            [ -f $TMP_VERSION_FILE ] && {
-                jq -cMS 'del(.nozzle_cam)' $TMP_VERSION_FILE > $TMP_VERSION_FILE.tmp && \
-                mv $TMP_VERSION_FILE.tmp $TMP_VERSION_FILE && sync
-                [ $(jq -e 'has("main_cam") or has("sub_cam")' $TMP_VERSION_FILE) = "true" ] || rm -rf $TMP_VERSION_FILE
-            }
     esac
 }
 
@@ -352,7 +265,7 @@ stop_all_uvc()
     }
 }
 
-echo_console "MDEV=$MDEV ; ACTION=$ACTION ; DEVPATH=$DEVPATH ;\n"
+#echo_console "MDEV=$MDEV ; ACTION=$ACTION ; DEVPATH=$DEVPATH ;\n"
 
 #sync && echo 3 > /proc/sys/vm/drop_caches
 

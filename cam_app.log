@@ -1,0 +1,76 @@
+[2026/02/05-02:42:12:546066]-[INFO]-[allwinner_video.c](416) input path: /dev/video0 
+
+[2026/02/05-02:42:12:554327]-[INFO]-[allwinner_video.c](417) realpath: /dev/video0 
+
+[2026/02/05-02:42:12:558190]-[INFO]-[allwinner_video.c](76) fw_info json file: { "sub_cam": { "video_node": "\/dev\/v4l\/by-id\/sub-video0", "manufactory": "STD-9613V2", "cur_version": "20240727V003", "newest_fw_path": "", "can_update": false } }
+
+[2026/02/05-02:42:12:560777]-[ERROR]-[allwinner_video.c](84) get object main_cam failed!
+
+[2026/02/05-02:42:12:601899]-[INFO]-[allwinner_video.c](732) service will exit, ret = -1
+
+[2026/02/05-02:43:17:939927]-[INFO]-[allwinner_video.c](416) input path: /dev/video0 
+
+[2026/02/05-02:43:17:943074]-[INFO]-[allwinner_video.c](417) realpath: /dev/video0 
+
+[2026/02/05-02:43:17:945641]-[INFO]-[allwinner_video.c](76) fw_info json file: { "sub_cam": { "video_node": "\/dev\/v4l\/by-id\/sub-video0", "manufactory": "STD-9613V2", "cur_version": "20240727V003", "newest_fw_path": "", "can_update": false } }
+
+[2026/02/05-02:43:17:948510]-[ERROR]-[allwinner_video.c](84) get object main_cam failed!
+
+[2026/02/05-02:43:17:991396]-[INFO]-[allwinner_video.c](732) service will exit, ret = -1
+
+[2026/02/05-02:43:28:197435]-[INFO]-[allwinner_video.c](416) input path: /dev/video0 
+
+[2026/02/05-02:43:28:200271]-[INFO]-[allwinner_video.c](417) realpath: /dev/video0 
+
+[2026/02/05-02:43:28:202413]-[INFO]-[allwinner_video.c](76) fw_info json file: { "sub_cam": { "video_node": "\/dev\/v4l\/by-id\/sub-video0", "manufactory": "STD-9613V2", "cur_version": "20240727V003", "newest_fw_path": "", "can_update": false } }
+
+[2026/02/05-02:43:28:204212]-[ERROR]-[allwinner_video.c](84) get object main_cam failed!
+
+[2026/02/05-02:43:28:233649]-[INFO]-[allwinner_video.c](732) service will exit, ret = -1
+
+[2026/02/22-03:35:26:543769]-[INFO]-[allwinner_video.c](416) input path: /dev/v4l/by-id/main-video0 
+
+[2026/02/22-03:35:26:548660]-[INFO]-[allwinner_video.c](417) realpath: /dev/video0 
+
+[2026/02/22-03:35:26:551036]-[INFO]-[allwinner_video.c](76) fw_info json file: { "main_cam": { "video_node": "\/dev\/v4l\/by-id\/main-video0", "manufactory": "STD-9613V2", "cur_version": "20240727V003", "newest_fw_path": "", "can_update": false } }
+
+[2026/02/22-03:35:26:554328]-[INFO]-[allwinner_video.c](482) size: 1920x1080, fps:30
+
+[2026/02/22-03:35:26:563020]-[DEBUG]-[allwinner_video.c](250) index: 0, len: 4147200
+
+[2026/02/22-03:35:26:567067]-[DEBUG]-[allwinner_video.c](250) index: 1, len: 4147200
+
+[2026/02/22-03:35:26:570496]-[DEBUG]-[allwinner_video.c](250) index: 2, len: 4147200
+
+[2026/02/22-03:37:07:320197]-[INFO]-[allwinner_video.c](126) Get signal: Terminated
+
+[2026/02/22-03:37:11:874920]-[INFO]-[allwinner_video.c](416) input path: /dev/v4l/by-id/main-video0 
+
+[2026/02/22-03:37:11:878070]-[INFO]-[allwinner_video.c](417) realpath: /dev/video0 
+
+[2026/02/22-03:37:11:880172]-[INFO]-[allwinner_video.c](76) fw_info json file: { "main_cam": { "video_node": "\/dev\/v4l\/by-id\/main-video0" } }
+
+[2026/02/22-03:37:11:882698]-[ERROR]-[allwinner_video.c](90) get object manufactory failed!
+
+[2026/02/22-03:37:11:922827]-[INFO]-[allwinner_video.c](732) service will exit, ret = -1
+
+[2026/02/22-03:41:26:230831]-[INFO]-[allwinner_video.c](416) input path: /dev/v4l/by-id/main-video0 
+
+[2026/02/22-03:41:26:235156]-[INFO]-[allwinner_video.c](417) realpath: /dev/video0 
+
+[2026/02/22-03:41:26:238497]-[INFO]-[allwinner_video.c](76) fw_info json file: { "main_cam": { "video_node": "\/dev\/v4l\/by-id\/main-video0", "manufactory": "STD-9613V2", "cur_version": "20240727V003", "newest_fw_path": "", "can_update": false } }
+
+[2026/02/22-03:41:26:248132]-[INFO]-[allwinner_video.c](482) size: 1920x1080, fps:30
+
+[2026/02/22-03:41:26:257025]-[DEBUG]-[allwinner_video.c](250) index: 0, len: 4147200
+
+[2026/02/22-03:41:26:269088]-[DEBUG]-[allwinner_video.c](250) index: 1, len: 4147200
+
+[2026/02/22-03:41:26:279153]-[DEBUG]-[allwinner_video.c](250) index: 2, len: 4147200
+
+[2026/02/22-03:47:43:659884]-[INFO]-[allwinner_video.c](732) service will exit, ret = -1
+
+[2026/02/22-03:47:43:752803]-[INFO]-[allwinner_video.c](732) service will exit, ret = -1
+
+[2026/02/22-03:47:44:408461]-[INFO]-[allwinner_video.c](732) service will exit, ret = -1
+
