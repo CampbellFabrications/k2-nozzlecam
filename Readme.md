@@ -5,6 +5,15 @@ commands.txt outlines some scrapboard commands used during development and stand
 auto_uvc.sh is the modified /usr/bin/auto_uvc.sh script that instantiates and sets up the chamber (and for stock, the AI-detection) cameras.
 This project modifies this file to _replace_ the stock AI Camera with a 3DO Nozzle Camera V2.
 
+## Installation
+The 60-v4l file will need modification to suit your chamber camera setup if you are using a USB Hub or are otherwise not connecting the camera straight to the external USB Socket.
+- run `udevadm info /dev/video0` to grab the relevant `DEVICENAME` variable to replace at Line 47
+<img src="./helper1.png">
+<img src="./helper2.png">
+
+
+
+
 Below you will find a modified readme of the 3DO Nozzle Camera provided by 3DO's github.
 Feel free to refer to the User Controls section for command functionality.
 Results may vary depending on hardware installation, you will likely end up with a customised command structure for your particular setup.
