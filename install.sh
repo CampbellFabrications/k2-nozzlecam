@@ -22,4 +22,7 @@ fi
 # symlink the udev rule into place
 ln -sf "${SCRIPT_DIR}/60-v4l" /etc/hotplug.d/usb/60-v4l
 
+# symlink the ustreamer binary into /usr/bin
+ln -sf "${SCRIPT_DIR}/ustreamer_static_arm32" /usr/bin/ustreamer_static_arm32
+
 echo "Installation complete. reboot the system to apply changes."
