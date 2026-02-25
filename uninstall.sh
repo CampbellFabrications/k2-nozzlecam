@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/sh
 
 set -e
 
@@ -21,5 +21,7 @@ fi
 rm -rf /usr/bin/ustreamer_static_arm32
 rm -rf /usr/bin/start_recording.sh
 rm -rf /usr/bin/stop_recording.sh
+rm -rf /mnt/UDISK/printer_data/config/camera_macro.cfg
+rm -rf /usr/share/klipper/klippy/extras/gcode_shell_command.py
 
 echo "Installation complete. reboot the system to apply changes."

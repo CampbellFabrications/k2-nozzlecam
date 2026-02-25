@@ -1,2 +1,0 @@
-./ustreamer_static_arm32  --device=/dev/video2 --format=MJPEG --resolution=1920x1080 --port=8001 --log-level=1 --host=0.0.0.0
-# /usr/bin/cam_app -i /dev/video0 -w 1920 -h 1080 -f 30 -c

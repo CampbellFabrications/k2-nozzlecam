@@ -24,10 +24,72 @@
                 fi
             done
         else
+            # The actual meat of the hotplug modification, grab our two devices, and pull their device paths to link dynamically
+            CHAMBER_IFACE=""
+            CHAMBER_VIDEO=""
+            NOZZLE_IFACE=""
+            NOZZLE_VIDEO=""
+
+            for dev in /dev/video*; do
+            INFO="$(udevadm info -a -n "$dev")"
+
+            # --- get V4L2 index (device block) ---
+            INDEX="$(printf '%s\n' "$INFO" | awk '
+                /looking at device/ {found=1; next}
+                found && /looking at parent device/ {exit}
+                found && /ATTR\{index\}/ {
+                split($0, a, "\"")
+                print a[2]
+                exit
+                }
+            ')"
+
+            # only keep primary stream
+            [ "$INDEX" != "0" ] && continue
+
+            # --- get interface name (parent block) ---
+            NAME="$(printf '%s\n' "$INFO" | awk '
+                /looking at parent device/ {found=1; next}
+                found && /looking at/ {exit}
+                found && /ATTRS\{interface\}/ {
+                split($0, a, "\"")
+                print a[2]
+                exit
+                }
+            ')"
+
+            # --- get USB interface path (parent block) ---
+            IFACE="$(printf '%s\n' "$INFO" | awk '
+                /looking at parent device/ {found=1; next}
+                found && /looking at/ {exit}
+                found && /KERNELS=="/ {
+                split($0, a, "\"")
+                print a[2]
+                exit
+                }
+            ')"
+
+            [ -z "$NAME" ] && continue
+
+            case "$NAME" in
+                *"CREALITY CAM"*)
+                CHAMBER_VIDEO="$(basename "$dev")"
+                CHAMBER_IFACE="$IFACE"
+                ;;
+                *"3DO USB CAMERA V2"*)
+                NOZZLE_VIDEO="$(basename "$dev")"
+                NOZZLE_IFACE="$IFACE"
+                ;;
+            esac
+            done
+
+            echo "Chamber camera: /dev/$CHAMBER_VIDEO  $CHAMBER_IFACE"
+            echo "Nozzle camera:  /dev/$NOZZLE_VIDEO   $NOZZLE_IFACE"
+
             # OTG USB, for chamber camera only!
             # The default USB port for chamber camera is 3-1:1.0
             # but it may be changed to 3-1.X:1.0 with the addition of a USB hub being put between the stock camera port, and the chamber camera.
-            if [ "$DEVICENAME" = "3-1:1.0" ]; then
+            if [ "$DEVICENAME" = "$CHAMBER_IFACE" ]; then
                 logger -t uvc "[BIND] Main camera detected at $DEVICENAME, checking for H264 support"
                 for node in $videos
                 do
@@ -44,9 +106,9 @@
                 done
             # The external USB port for the K2 Plus is 1-1.1:1.0, run `udevadm info /dev/videoX` to check the DEVPATH for your added camera, and change the next line accordingly.
             # Yet to get the internal hub modification's USB port DEVPATH, so keep the external 1-1.1:1.0 for now.
-            elif [ "$DEVICENAME" = "1-1.1:1.0" ]; then
-            # USB HUB port, for 3DO Nozzle Camera only!
-                logger -t uvc "[BIND] Nozzle camera detected at 1-1.1:1.0, checking for MJPG support"
+            elif [ "$DEVICENAME" = "$NOZZLE_IFACE" ]; then
+            # USB HUB port,
+                logger -t uvc "[BIND] Nozzle camera detected at $DEVICENAME, checking for MJPG support"
                 for node in $videos
                 do
                     mjpg_result=$(v4l2-ctl -d /dev/$node --list-framesizes MJPG 2>&1 | wc -l)
@@ -61,8 +123,8 @@
                     fi
                 done
             else
-            # USB HUB port, for stock AI nozzle-camera only!
-                logger -t uvc "[BIND] FALLBACK to sub-camera - DEVICENAME=$DEVICENAME does not match known ports (3-1.2:1.0 or 1-1.1:1.0)"
+            # stock AI nozzle-camera only!
+                logger -t uvc "[BIND] FALLBACK to sub-camera - DEVICENAME=$DEVICENAME does not match known ports"
                 logger -t uvc "[BIND] Sub camera detected at $DEVICENAME, checking for MJPG support"
                 for node in $videos
                 do
