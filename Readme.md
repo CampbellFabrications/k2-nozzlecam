@@ -1,40 +1,36 @@
 # K2 Extruder Nozzle-Cam Project
 
 more documentation will be added soon.
-commands.txt outlines some scrapboard commands used during development and standalone operation.
-auto_uvc.sh is the modified /usr/bin/auto_uvc.sh script that instantiates and sets up the chamber (and for stock, the AI-detection) cameras.
-This project modifies this file to _replace_ the stock AI Camera with a 3DO Nozzle Camera V2.
+
+This project lets you install the 3DO Nozzle Camera V2 into the K2 Plus (and potentially the K2 & K2 Pro) Series Extruder.
+there are printable .STEP files to _replace_ the stock AI Camera, and files to keep the stock AI Camera.
+I recommend printing those parts in ASA or any CF composite of ASA.
+
+There is currently no place to mount the 3DO Camera board if you choose to keep the Stock AI Camera, however i've had success storing it next to the extruder toolboard, in the rear of the extruder carriage, provided your clips are intact.
+
+Personally, I recommend removing the Stock AI Camera, there's not much benefit from having it, despite a few calibrations that use it.
 
 ## Installation
-The 60-v4l file will need modification to suit your chamber camera setup if you are using a USB Hub or are otherwise not connecting the camera straight to the external USB Socket.
-- run `udevadm info /dev/video0` to grab the relevant `DEVICENAME` variable to replace at Line 47
-<img src="./helper1.png">
-<img src="./helper2.png">
 
-
-
+Run `./install.sh` to drag all the required files over, and include a handy recording macro into your printer.cfg
+Simple as that.
 
 Below you will find a modified readme of the 3DO Nozzle Camera provided by 3DO's github.
 Feel free to refer to the User Controls section for command functionality.
-Results may vary depending on hardware installation, you will likely end up with a customised command structure for your particular setup.
+Results may vary depending on hardware installation, you will likely end up experimenting with different `set-ctrls` parameters set to your liking.
 I'll be providing my commands used here for reference until such time as a front-end UI can me made to control the camera without touching the commandline.
 
-**Install Script**
-
-I added a small helper script to back up original files and replace them with symlinks to new versions.
-
-- **File:** [install.sh](install.sh)
 
 ## FPC Cable Options
 - 5cm - Needs LED's
 - 10cm - Needs LED's
 - 25cm - Needs LED's
-- 5cm with LEDs - Recommended for K2 Plus
+- 5cm with LEDs - Recommended (but not tested) for K2 Plus
 - 10cm with LEDs - Tested for K2 Plus
 - 25cm with LEDs - Too Long for K2 Plus
 
 ## Camera Options
-- **Nozzle Camera (Glued)**: Lens glued in place to focus 3.45cm from the back of FPC to the object.
+- **Nozzle Camera (Glued)**: Not Recommended.
 - **Nozzle Camera (Adjustable)**: Lens focus can be adjusted by rotating the lens.
 - **Enclosure Camera (Adjustable)**: Lens focus can be adjusted by rotating the lens, FoV 120°.
 
