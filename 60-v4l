@@ -31,56 +31,56 @@
             NOZZLE_VIDEO=""
 
             for dev in /dev/video*; do
-            INFO="$(udevadm info -a -n "$dev")"
+                INFO="$(udevadm info -a -n "$dev")"
 
-            # --- get V4L2 index (device block) ---
-            INDEX="$(printf '%s\n' "$INFO" | awk '
-                /looking at device/ {found=1; next}
-                found && /looking at parent device/ {exit}
-                found && /ATTR\{index\}/ {
-                split($0, a, "\"")
-                print a[2]
-                exit
-                }
-            ')"
+                # --- get V4L2 index (device block) ---
+                INDEX="$(printf '%s\n' "$INFO" | awk '
+                    /looking at device/ {found=1; next}
+                    found && /looking at parent device/ {exit}
+                    found && /ATTR\{index\}/ {
+                    split($0, a, "\"")
+                    print a[2]
+                    exit
+                    }
+                ')"
 
-            # only keep primary stream
-            [ "$INDEX" != "0" ] && continue
+                # only keep primary stream
+                [ "$INDEX" != "0" ] && continue
 
-            # --- get interface name (parent block) ---
-            NAME="$(printf '%s\n' "$INFO" | awk '
-                /looking at parent device/ {found=1; next}
-                found && /looking at/ {exit}
-                found && /ATTRS\{interface\}/ {
-                split($0, a, "\"")
-                print a[2]
-                exit
-                }
-            ')"
+                # --- get interface name (parent block) ---
+                NAME="$(printf '%s\n' "$INFO" | awk '
+                    /looking at parent device/ {found=1; next}
+                    found && /looking at/ {exit}
+                    found && /ATTRS\{interface\}/ {
+                    split($0, a, "\"")
+                    print a[2]
+                    exit
+                    }
+                ')"
 
-            # --- get USB interface path (parent block) ---
-            IFACE="$(printf '%s\n' "$INFO" | awk '
-                /looking at parent device/ {found=1; next}
-                found && /looking at/ {exit}
-                found && /KERNELS=="/ {
-                split($0, a, "\"")
-                print a[2]
-                exit
-                }
-            ')"
+                # --- get USB interface path (parent block) ---
+                IFACE="$(printf '%s\n' "$INFO" | awk '
+                    /looking at parent device/ {found=1; next}
+                    found && /looking at/ {exit}
+                    found && /KERNELS=="/ {
+                    split($0, a, "\"")
+                    print a[2]
+                    exit
+                    }
+                ')"
 
-            [ -z "$NAME" ] && continue
+                [ -z "$NAME" ] && continue
 
-            case "$NAME" in
-                *"CREALITY CAM"*)
-                CHAMBER_VIDEO="$(basename "$dev")"
-                CHAMBER_IFACE="$IFACE"
-                ;;
-                *"3DO USB CAMERA V2"*)
-                NOZZLE_VIDEO="$(basename "$dev")"
-                NOZZLE_IFACE="$IFACE"
-                ;;
-            esac
+                case "$NAME" in
+                    *"CREALITY CAM"*)
+                    CHAMBER_VIDEO="$(basename "$dev")"
+                    CHAMBER_IFACE="$IFACE"
+                    ;;
+                    *"3DO USB CAMERA V2"*)
+                    NOZZLE_VIDEO="$(basename "$dev")"
+                    NOZZLE_IFACE="$IFACE"
+                    ;;
+                esac
             done
 
             echo "Chamber camera: /dev/$CHAMBER_VIDEO  $CHAMBER_IFACE"
