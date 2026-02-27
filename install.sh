@@ -44,4 +44,15 @@ cp -f "${SCRIPT_DIR}/camera_macro.cfg" /mnt/UDISK/printer_data/config/camera_mac
 python ${SCRIPT_DIR}/ensure_included.py \
     ~/printer_data/config/printer.cfg camera_macro.cfg
 
+
+# cp fluidd assets into /usr/share/fluidd
+
+# fluidd config files get added to /mnt/UDISK/printer_data/config/fluidd/
+
+# direct tmp files get put into /tmp
+
+# add camera detection script
+#chmod +x "${SCRIPT_DIR}/get_camera_info.sh"
+#ln -sf "${SCRIPT_DIR}/get_camera_info.sh" /mnt/UDISK/printer_data/scripts/get_camera_info.sh
+
 echo "Installation complete. reboot the system to apply changes."
