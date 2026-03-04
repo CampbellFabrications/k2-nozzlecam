@@ -12,14 +12,21 @@ Personally, I recommend removing the Stock AI Camera, there's not much benefit f
 
 ## Installation
 
-Run `./install.sh` to drag all the required files over, and include a handy recording macro into your printer.cfg
+Run `sh ./install.sh` to drag all the required files over, and include a handy recording macro into your printer.cfg
 Simple as that.
+
+Use `START_PRINT_RECORDING` to start a recording, optionally add this line into your slicer's Start Print macro block, or your `START_PRINT` macro inside `gcode_macro.cfg`.
+
+Use `STOP_PRINT_RECORDING` to stop the recording, again it's recommended to add this into your slicer's End Print macro block, or the relevant onboard macro on your printer.
+
 
 Below you will find a modified readme of the 3DO Nozzle Camera provided by 3DO's github.
 Feel free to refer to the User Controls section for command functionality.
 Results may vary depending on hardware installation, you will likely end up experimenting with different `set-ctrls` parameters set to your liking.
 I'll be providing my commands used here for reference until such time as a front-end UI can me made to control the camera without touching the commandline.
 
+- Use `v4l2-ctl --device=/dev/video0 --list-ctrls` to view the available commands, and their current set values.
+- Use `v4l2-ctl --devicve=/dev/video0 -set-ctrl
 
 ## FPC Cable Options
 - 5cm - Needs LED's
@@ -86,3 +93,7 @@ _**Tested for 48hrs without issue, use with caution._
 
 - PTZ controls (`pan_absolute`, `tilt_absolute`, `zoom_absolute`) are used to crop the image. All 30fps streams are downscaled to 4K, and all 60fps streams are downscaled to 1080p. To use the crop feature, you need to select a downscaled stream.
 
+
+### Credits
+
+Jamin Collins - Ensure-Encluded.py

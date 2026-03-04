@@ -26,7 +26,7 @@ export function useV4LControls(device = "/dev/video0") {
       "~/printer_data/scripts/get_v4l_ctrls.sh > /tmp/v4l.json"
     )
 
-    const res = await fetch("/server/files/roots/tmp/v4l.json")
+    const res = await fetch("/tmp/v4l.json")
     const json = await res.json()
 
     controls.value = Object.entries(json.controls).map(
