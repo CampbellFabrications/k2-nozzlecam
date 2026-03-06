@@ -26,8 +26,8 @@ SUB_PIC_FPS=5
 PROG_USTREAMER=/usr/bin/ustreamer_static_arm32
 NOZZLE_USTR_PORT=8001
 NOZZLE_USTR_FORMAT=MJPEG
-NOZZLE_USTR_RESOLUTION=1920x1080
-NOZZLE_USTR_FRAMERATE=60
+NOZZLE_USTR_RESOLUTION=2560x1440
+NOZZLE_USTR_FRAMERATE=30
 NOZZLE_USTR_LOG_LEVEL=1
 NOZZLE_USTR_HOST=0.0.0.0
 
@@ -136,6 +136,7 @@ fw_info()
 start_uvc()
 {
     local count=0
+     logger -t uvc "[START_USTREAMER] Config: SOURCE=$1"
     case $1 in
         main-video*)
             echo_console "start cam_app service for $1 : "
@@ -204,6 +205,8 @@ start_uvc()
                 --port=$NOZZLE_USTR_PORT \
                 --log-level=$NOZZLE_USTR_LOG_LEVEL \
                 --host=$NOZZLE_USTR_HOST
+            #hopefully this'll set the hardware to a setting ive found well calibrated
+            v4l2-ctl --device=$1 --set-ctrl=exposure_auto=1 --set-ctrl=exposure_absolute=150 --set-ctrl=focus_auto=0 --set-ctrl=sharpness=7 --set-ctrl=gamma=150 --set-ctrl=gain=200 --set-ctrl=tilt_absolute=648000 --set-ctrl=pan_absolute=-100000
             
             if [ $? = 0 ]; then
                 logger -t uvc "[START_USTREAMER] Successfully started $1 with PID $(cat /var/run/$1.pid)"
@@ -355,6 +358,7 @@ stop_all_uvc()
 }
 
 echo_console "MDEV=$MDEV ; ACTION=$ACTION ; DEVPATH=$DEVPATH ;\n"
+echo "MDEV=$MDEV ; ACTION=$ACTION ; DEVPATH=$DEVPATH ;\n"
 
 #sync && echo 3 > /proc/sys/vm/drop_caches
 

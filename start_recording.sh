@@ -17,10 +17,11 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 if [ -n "$PRINT_NAME" ]; then
   # sanitize: keep letters, numbers, dash, underscore
-  SAFE_NAME=$(echo "$PRINT_NAME" | tr -cd '[:alnum:]_-')
-  FILENAME="$OUTDIR/${SAFE_NAME}_${TIMESTAMP}.mjpeg"
+  # Ignore sanitisation for now
+  # SAFE_NAME=$(echo "$PRINT_NAME" | tr -cd '[:alnum:]_-')
+  FILENAME="$OUTDIR/${PRINT_NAME}_${TIMESTAMP}"
 else
-  FILENAME="$OUTDIR/print_${TIMESTAMP}.mjpeg"
+  FILENAME="$OUTDIR/print_${TIMESTAMP}"
 fi
 
 # Ensure USB is writable
@@ -30,7 +31,13 @@ rm -f "$OUTDIR/.write_test"
 
 
 # Start recording
-curl -s "$STREAM_URL" --output "$FILENAME" &
+#ffmpeg -i "$STREAM_URL" -c copy "$FILENAME" > /tmp/ffmpeg.log 2>&1 &
+#ffmpeg -r 25 -fflags +genpts -i "$STREAM_URL" -c copy "$FILENAME" > /tmp/ffmpeg.log 2>&1 &
+ffmpeg -fflags +genpts -use_wallclock_as_timestamps 1 -i "$STREAM_URL" -c copy "$FILENAME.avi" > /tmp/ffmpeg.log 2>&1 &
+#ffmpeg -r 25 -fflags +genpts -f v4l2 -input_format mjpeg -video_size 1920x1080 -i /dev/video0 \
+#  -map 0:v -c copy /mnt/exUDISK/print_$(date +%Y%m%d_%H%M%S).avi \
+#  -map 0:v -vf scale=1280:720 -r 25 -f mjpeg http://localhost:8001/stream
+
 echo $! > "$PIDFILE"
 
 exit 0
